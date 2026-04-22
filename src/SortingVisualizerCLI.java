@@ -1,0 +1,368 @@
+import java.util.Scanner;
+
+class SortingVisualiser_V1 {
+    static void main() {
+        System.out.print("Please enter number of elements to be sorted :");
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int[] arr = new int[n];
+
+        System.out.println("Please enter array elements (space separated integer values) :");
+        for(int i=0; i<n; i++){
+            arr[i] = sc.nextInt();
+        }
+
+        System.out.println("Which algorithm will you prefer?");
+        System.out.println("1. - Bubble Sort");
+        System.out.println("2. - Selection Sort");
+        System.out.println("3. - Insertion Sort");
+        System.out.println("4. - Merge Sort");
+        System.out.println("5. - Quick Sort");
+        System.out.println("6. - Counting Sort");
+        System.out.println("7. - Radix Sort");
+        int algorithm = sc.nextInt();
+
+        int type;
+        switch(algorithm){
+            case 1 :
+                bubbleSort(arr);
+                break;
+            case 2 :
+                System.out.println("1. - Min Based \nOR\n2. - Max Based");
+                type = sc.nextInt();
+                if(type == 1) selectionSort_min(arr);
+                if(type == 2) selectionSort_max(arr);
+                break;
+            case 3 :
+                System.out.println("1. - Swap Based \nOR\n2. - Shifting Based");
+                type = sc.nextInt();
+                if(type == 1) insertionSort_swap(arr);
+                if(type == 2) insertionSort_shift(arr);
+                break;
+            case 4 :
+                System.out.println("1. - Naive Auxiliary Array Based \n2. - Indices Based \n3. - Bottom Up Merge Sort");
+                type = sc.nextInt();
+                if(type == 1) mergeSort_AuxArray(arr);
+                if(type == 2) mergeSort_IndicesBased(arr,0,n-1);
+                if(type == 3) mergeSort_bottomUp(arr);
+                break;
+            case 5 :
+                System.out.println("1. - Naive Partition Algo \n2. - Lomuto Partition Based \n3. - Hoare Partition Based");
+                type = sc.nextInt();
+                if(type == 1) quickSort_Naive(arr, 0,n-1);
+                if(type == 2) quickSort_Lomuto(arr,0,n-1);
+                if(type == 3) quickSort_Hoare(arr, 0,n-1);
+                break;
+            case 6 :
+                int min = arr[0], max = arr[0];
+                for(int ele : arr){
+                    if(ele < min) min = ele;
+                    if(ele > max) max = ele;
+                }
+                countingSort(arr,min,max);
+                break;
+            case 7 :
+                radixSort(arr);
+                break;
+            default :
+                System.out.println("Invalid input, please give input in integer format 1 to 7");
+        }
+
+        System.out.println("Here is your sorted array :");
+        printArray(arr);
+
+    }
+
+    public static void printArray(int[] arr) {
+        for (int num : arr) System.out.print(num + " ");
+        System.out.println();
+    }
+
+    static void bubbleSort(int[] arr){
+        boolean sorted;
+        for(int i=0; i<arr.length-1; i++)
+        {
+            sorted = true;
+            for(int j=0; j<arr.length-1-i; j++)
+            {
+                if(arr[j] > arr[j+1])
+                {
+                    arr[j] = arr[j + 1] + (arr[j + 1] = arr[j]) - arr[j];
+                    sorted = false;
+                }
+            }
+            if(sorted) return;
+        }
+    }
+
+
+    // original selection sort - min based
+    static void selectionSort_min(int[] arr) {
+        int n = arr.length;
+        int minIdx;
+
+        for(int i=0; i<n-1; i++)
+        {
+            minIdx = i;
+            for(int j=i+1; j<n; j++)
+            {
+                if(arr[minIdx]>arr[j]) minIdx = j;
+            }
+            int temp = arr[minIdx];
+            arr[minIdx] = arr[i];
+            arr[i] = temp;
+        }
+    }
+
+    // original selection sort - max based
+    static void selectionSort_max(int[] arr) {
+        int n = arr.length;
+        int maxIdx;
+
+        for(int i=0; i<n-1; i++)
+        {
+            maxIdx = n-1-i;
+            for(int j=0; j<n-i; j++)
+            {
+                if(arr[maxIdx]<arr[j]) maxIdx = j;
+            }
+            int temp = arr[maxIdx];
+            arr[maxIdx] = arr[i];
+            arr[i] = temp;
+        }
+    }
+
+
+    // Insertion Sort - Swap based
+    static void insertionSort_swap(int[] arr){
+        for(int i=0; i<arr.length; i++)
+        {
+            for(int j=i; j>0; j--){
+                if(arr[j-1] > arr[j])
+                    arr[j-1] = arr[j-1] + arr[j] - (arr[j] = arr[j-1]);
+            }
+        }
+    }
+    // Insertion Sort - Shifting based
+    static void insertionSort_shift(int[] arr){
+        for(int i=0; i<arr.length-1; i++)
+        {
+            int key = arr[i]; // value to be inserted
+
+            int j = i;
+            while(j>0)
+            {
+                if(arr[j-1] <= key) break;
+                arr[j] = arr[j-1];
+                j--;
+            }
+            arr[j] = key;
+        }
+    }
+
+
+    // Naive Auxiliary Array Based Merge Sort
+    static void mergeSort_AuxArray(int[] arr){
+        int n = arr.length;
+        if(n == 1) return;
+        int[] a = new int[n/2];
+        int[] b = new int[n-n/2];
+
+        int idx = 0;
+        for(int i=0; i<a.length; i++) a[i] = arr[idx++];
+        for(int i=0; i<b.length; i++) b[i] = arr[idx++];
+
+        mergeSort_AuxArray(a);
+        mergeSort_AuxArray(b);
+
+        merge1(a,b,arr);
+    }
+    static void merge1(int[] a, int[] b, int[] c){
+        int i=0, j=0, k=0;
+        while(i<a.length && j<b.length){
+            if(a[i] < b[j]) c[k++] = a[i++];
+            else c[k++] = b[j++];
+        }
+        while(i<a.length) c[k++] = a[i++];
+        while(j<b.length) c[k++] = b[j++];
+    }
+
+    // Optimised Indices Based Merge Sort
+    static void mergeSort_IndicesBased(int[] arr, int l, int r){
+        if(l >= r) return;
+        int mid = l + (r-l)/2;
+        mergeSort_IndicesBased(arr,l,mid);
+        mergeSort_IndicesBased(arr,mid+1,r);
+        merge2(arr,l,mid,r);
+    }
+    static void merge2(int[] arr, int l, int mid, int r){
+        int[] temp = new int[r-l+1];
+        int i=l, j=mid+1, k = 0;
+        while(i<=mid && j<=r){
+            if(arr[i] < arr[j]) temp[k++] = arr[i++];
+            else temp[k++] = arr[j++];
+        }
+        while(i<=mid) temp[k++] = arr[i++];
+        while(j<=r) temp[k++] = arr[j++];
+        for(int u=0; u< temp.length; u++){
+            arr[l+u] = temp[u];
+        }
+    }
+
+    // Bottom Up Merge Sort
+    static void mergeSort_bottomUp(int[] arr){
+        int n = arr.length;
+        for(int size = 1; size<n; size *= 2)
+        {
+            for(int left = 0; left < n-size; left += 2*size)
+            {
+                int mid = left+size-1;
+                int right = Math.min(left+2*size-1, n-1);
+                merge2(arr,left,mid,right);
+            }
+        }
+    }
+
+
+    // Naive Partition Based QuickSort
+    static void quickSort_Naive(int[] arr, int low, int high)
+    {
+        if(low >= high) return;
+        int p = partition(arr,low,high);
+        quickSort_Naive(arr, low , p-1);
+        quickSort_Naive(arr, p+1, high);
+    }
+    static int partition(int[] arr, int l, int h)
+    {
+        int p = h;
+        int[] temp = new int[h-l+1];
+        int idx = 0;
+        for(int i=l; i<h+1; i++)
+        {
+            if(arr[i] <= arr[p] && i!=p)
+                temp[idx++] = arr[i];
+        }
+        int store = idx+l;
+        temp[idx++] = arr[p];
+        for(int i=l; i<h+1; i++)
+        {
+            if(arr[i] > arr[p] && i!=p)
+                temp[idx++] = arr[i];
+        }
+        idx = 0;
+        for(int i=l; i<h+1; i++){
+            arr[i] = temp[idx++];
+        }
+        return store;
+    }
+
+    // Lomuto Partition Based QuickSort
+    static void quickSort_Lomuto(int[] arr, int low, int high)
+    {
+        if(low >= high) return;
+        int p = lpartition(arr,low,high);
+        quickSort_Lomuto(arr, low , p-1);
+        quickSort_Lomuto(arr, p+1, high);
+    }
+    static int lpartition(int[] arr, int l, int h)
+    {
+        int p = h;
+        int i = l-1;
+        for(int j=l; j<h; j++){
+            if(arr[j] < arr[p]){
+                i++;
+                arr[j] = arr[i] + arr[j] - (arr[i] = arr[j]);
+            }
+        }
+        int temp = arr[p];
+        arr[p] = arr[i+1];
+        arr[i+1] = temp;
+        return i+1;
+    }
+
+    // Lomuto Partition Based QuickSort
+    static void quickSort_Hoare(int[] arr, int low, int high)
+    {
+        if(low >= high) return;
+        int p = hpartition(arr,low,high);
+        quickSort_Hoare(arr, low , p);
+        quickSort_Hoare(arr, p+1, high);
+    }
+    static int hpartition(int[] arr, int l, int h)
+    {
+        int pivot = arr[l];
+        int i = l-1;
+        int j = h+1;
+        while(true){
+            do{ i++; } while(arr[i] < pivot);
+            do{ j--; } while(arr[j] > pivot);
+            if(i>=j) return j;
+            arr[i] = arr[i] + arr[j] - (arr[j] = arr[i]);
+        }
+    }
+
+
+    // Counting Sort
+    static void countingSort(int[] arr, int min, int max){
+        int n = arr.length;
+        if(min < 0){
+            for(int i=0; i<n; i++) arr[i] = arr[i] - min;
+        }
+        int k = (max-min)+1;
+        int[] count = new int[k]; // Java automatically initializes this to zeros
+
+        for(int i=0; i<n; i++) count[arr[i]]++;
+
+        for(int i=1; i<k; i++)
+            count[i] += count[i-1];
+
+        int[] op = new int[n];
+        for(int i=n-1; i>=0; i--){
+            op[count[arr[i]]-1] = arr[i];
+            count[arr[i]]--;
+        }
+        for(int i=0; i<n; i++) arr[i] = op[i];
+
+        if(min < 0){
+            for(int i=0; i<n; i++) arr[i] = arr[i] + min;
+        }
+    }
+
+
+    // Radix Sort
+    static void radixSort(int[] arr)
+    {
+        int n = arr.length;
+        int min = arr[0];
+        for(int ele : arr){
+            if(ele < min) min = ele;
+        }
+        if(min < 0) for(int i=0; i<n; i++) arr[i] = arr[i] - min;
+
+        int max = arr[0];
+        for(int ele : arr){
+            if(ele > max) max = ele;
+        }
+        for(int exp = 1; max/exp > 0; exp *= 10){
+            radixCountingSort(arr,exp);
+        }
+        if(min < 0) for(int i=0; i<n; i++) arr[i] = arr[i] + min;
+    }
+    static void radixCountingSort(int[] arr, int exp){
+        int n = arr.length;
+        int[] count = new int[10];
+        int[] temp = new int[n];
+
+        for(int i=0; i<n; i++) count[(arr[i]/exp)%10]++;
+        for(int i=1; i<10; i++) count[i] += count[i-1];
+
+        for(int i=n-1; i>=0; i--){
+            temp[count[(arr[i]/exp)%10]-1] = arr[i];
+            count[(arr[i]/exp)%10]--;
+        }
+
+        for(int i=0; i<n; i++){
+            arr[i] = temp[i];
+        }
+    }
+}
