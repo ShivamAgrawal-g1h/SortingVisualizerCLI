@@ -1,17 +1,32 @@
 import java.util.Scanner;
 
-class SortingVisualiser_V1 {
-    static void main() {
-        System.out.print("Please enter number of elements to be sorted :");
-        Scanner sc = new Scanner(System.in);
-        int n = sc.nextInt();
-        int[] arr = new int[n];
+class SortingVisualizer_V2 {
 
-        System.out.println("Please enter array elements (space separated integer values) :");
-        for(int i=0; i<n; i++){
-            arr[i] = sc.nextInt();
+    static long rec_start;
+
+    static void main() {
+        Scanner sc = new Scanner(System.in);
+        int[] arr;
+        int n;
+
+        System.out.println("1. Manual Input\n2. Random Input");
+        int ip = sc.nextInt();
+        if(ip == 1) {
+            System.out.print("Please enter number of elements to be sorted :");
+            n = sc.nextInt();
+            arr = new int[n];
+            System.out.println("Please enter array elements (space separated integer values) :");
+            for (int i = 0; i < n; i++) {
+                arr[i] = sc.nextInt();
+            }
+        }
+        else{
+            int[] brr = {1, 9, 71, 2, 66, 50, 7};
+            arr = brr;
+            n = arr.length;
         }
 
+        int[] save = arr;
         System.out.println("Which algorithm will you prefer?");
         System.out.println("1. - Bubble Sort");
         System.out.println("2. - Selection Sort");
@@ -23,54 +38,79 @@ class SortingVisualiser_V1 {
         int algorithm = sc.nextInt();
 
         int type;
-        switch(algorithm){
-            case 1 :
+        switch (algorithm) {
+            case 1:
                 bubbleSort(arr);
                 break;
-            case 2 :
-                System.out.println("1. - Min Based \nOR\n2. - Max Based");
+            case 2:
+                System.out.println("1. - Min Based \n2. - Max Based");
                 type = sc.nextInt();
-                if(type == 1) selectionSort_min(arr);
-                if(type == 2) selectionSort_max(arr);
+                if (type == 1) selectionSort_min(arr);
+                if (type == 2) selectionSort_max(arr);
                 break;
-            case 3 :
-                System.out.println("1. - Swap Based \nOR\n2. - Shifting Based");
+            case 3:
+                System.out.println("1. - Swap Based \n2. - Shifting Based");
                 type = sc.nextInt();
-                if(type == 1) insertionSort_swap(arr);
-                if(type == 2) insertionSort_shift(arr);
+                if (type == 1) insertionSort_swap(arr);
+                if (type == 2) insertionSort_shift(arr);
                 break;
-            case 4 :
+            case 4:
                 System.out.println("1. - Naive Auxiliary Array Based \n2. - Indices Based \n3. - Bottom Up Merge Sort");
                 type = sc.nextInt();
-                if(type == 1) mergeSort_AuxArray(arr);
-                if(type == 2) mergeSort_IndicesBased(arr,0,n-1);
-                if(type == 3) mergeSort_bottomUp(arr);
+                if (type == 1) {
+                    System.out.println("It is recursion - DFS(depth first search), so all levels doesnt appears together");
+                    rec_start = System.nanoTime();
+                    mergeSort_AuxArray(arr, 1);
+                    long end = System.nanoTime();
+                    System.out.println("Time: " + (end - rec_start) / 1_000_000.0 + " ms\n");
+                }
+                if (type == 2) {
+                    rec_start = System.nanoTime();
+                    mergeSort_IndicesBased(arr, 0, n - 1, 1);
+                    long end = System.nanoTime();
+                    System.out.println("Time: " + (end - rec_start) / 1_000_000.0 + " ms\n");
+                }
+                if (type == 3) mergeSort_bottomUp(arr);
                 break;
-            case 5 :
+            case 5:
                 System.out.println("1. - Naive Partition Algo \n2. - Lomuto Partition Based \n3. - Hoare Partition Based");
                 type = sc.nextInt();
-                if(type == 1) quickSort_Naive(arr, 0,n-1);
-                if(type == 2) quickSort_Lomuto(arr,0,n-1);
-                if(type == 3) quickSort_Hoare(arr, 0,n-1);
-                break;
-            case 6 :
-                int min = arr[0], max = arr[0];
-                for(int ele : arr){
-                    if(ele < min) min = ele;
-                    if(ele > max) max = ele;
+                if (type == 1) {
+                    rec_start = System.nanoTime();
+                    quickSort_Naive(arr, 0, n - 1, 1);
+                    long end = System.nanoTime();
+                    System.out.println("Time: " + (end - rec_start) / 1_000_000.0 + " ms\n");
                 }
-                countingSort(arr,min,max);
+                if (type == 2) {
+                    rec_start = System.nanoTime();
+                    quickSort_Lomuto(arr, 0, n - 1, 1);
+                    long end = System.nanoTime();
+                    System.out.println("Time: " + (end - rec_start) / 1_000_000.0 + " ms\n");
+                }
+                if (type == 3) {
+                    rec_start = System.nanoTime();
+                    quickSort_Hoare(arr, 0, n - 1, 1);
+                    long end = System.nanoTime();
+                    System.out.println("Time: " + (end - rec_start) / 1_000_000.0 + " ms\n");
+                }
                 break;
-            case 7 :
+            case 6:
+                int min = arr[0], max = arr[0];
+                for (int ele : arr) {
+                    if (ele < min) min = ele;
+                    if (ele > max) max = ele;
+                }
+                countingSort(arr, min, max);
+                break;
+            case 7:
                 radixSort(arr);
                 break;
-            default :
+            default:
                 System.out.println("Invalid input, please give input in integer format 1 to 7");
         }
 
         System.out.println("Here is your sorted array :");
         printArray(arr);
-
     }
 
     public static void printArray(int[] arr) {
@@ -79,6 +119,9 @@ class SortingVisualiser_V1 {
     }
 
     static void bubbleSort(int[] arr){
+        long start = System.nanoTime();
+        int step = 1;
+
         boolean sorted;
         for(int i=0; i<arr.length-1; i++)
         {
@@ -91,13 +134,21 @@ class SortingVisualiser_V1 {
                     sorted = false;
                 }
             }
+            System.out.println("Step " + step++);
+            printArray(arr);
             if(sorted) return;
         }
+
+        long end = System.nanoTime();
+        System.out.println("Time: " + (end - start) / 1_000_000.0 + " ms\n");
     }
 
 
     // original selection sort - min based
     static void selectionSort_min(int[] arr) {
+        long start = System.nanoTime();
+        int step = 1;
+
         int n = arr.length;
         int minIdx;
 
@@ -111,11 +162,20 @@ class SortingVisualiser_V1 {
             int temp = arr[minIdx];
             arr[minIdx] = arr[i];
             arr[i] = temp;
+
+            System.out.println("Step " + step++);
+            printArray(arr);
         }
+
+        long end = System.nanoTime();
+        System.out.println("Time: " + (end - start) / 1_000_000.0 + " ms\n");
     }
 
     // original selection sort - max based
     static void selectionSort_max(int[] arr) {
+        long start = System.nanoTime();
+        int step = 1;
+
         int n = arr.length;
         int maxIdx;
 
@@ -129,40 +189,63 @@ class SortingVisualiser_V1 {
             int temp = arr[maxIdx];
             arr[maxIdx] = arr[i];
             arr[i] = temp;
+
+            System.out.println("Step " + step++);
+            printArray(arr);
         }
+
+        long end = System.nanoTime();
+        System.out.println("Time: " + (end - start) / 1_000_000.0 + " ms\n");
     }
 
 
     // Insertion Sort - Swap based
     static void insertionSort_swap(int[] arr){
+        long start = System.nanoTime();
+        int step = 1;
+
         for(int i=0; i<arr.length; i++)
         {
             for(int j=i; j>0; j--){
                 if(arr[j-1] > arr[j])
                     arr[j-1] = arr[j-1] + arr[j] - (arr[j] = arr[j-1]);
             }
+            System.out.println("Step " + step++);
+            printArray(arr);
         }
+
+        long end = System.nanoTime();
+        System.out.println("Time: " + (end - start) / 1_000_000.0 + " ms\n");
     }
     // Insertion Sort - Shifting based
     static void insertionSort_shift(int[] arr){
-        for(int i=0; i<arr.length-1; i++)
+        long start = System.nanoTime();
+        int step = 1;
+
+        for(int i=1; i<arr.length; i++)
         {
-            int key = arr[i]; // value to be inserted
+            int key = arr[i]; // value to be inserted into the sorted world
 
             int j = i;
             while(j>0)
             {
                 if(arr[j-1] <= key) break;
-                arr[j] = arr[j-1];
+                arr[j] = arr[j-1]; // right shift
                 j--;
             }
             arr[j] = key;
+
+            System.out.println("Step " + step++);
+            printArray(arr);
         }
+
+        long end = System.nanoTime();
+        System.out.println("Time: " + (end - start) / 1_000_000.0 + " ms\n");
     }
 
 
     // Naive Auxiliary Array Based Merge Sort
-    static void mergeSort_AuxArray(int[] arr){
+    static void mergeSort_AuxArray(int[] arr, int level){
         int n = arr.length;
         if(n == 1) return;
         int[] a = new int[n/2];
@@ -172,10 +255,16 @@ class SortingVisualiser_V1 {
         for(int i=0; i<a.length; i++) a[i] = arr[idx++];
         for(int i=0; i<b.length; i++) b[i] = arr[idx++];
 
-        mergeSort_AuxArray(a);
-        mergeSort_AuxArray(b);
+        mergeSort_AuxArray(a,level+1);
+        mergeSort_AuxArray(b,level+1);
+
+        System.out.println("Entering Rec_Level " + level);
+        printArray(arr);
 
         merge1(a,b,arr);
+
+        System.out.println("Exiting Rec_Level " + level);
+        printArray(arr);
     }
     static void merge1(int[] a, int[] b, int[] c){
         int i=0, j=0, k=0;
@@ -188,12 +277,19 @@ class SortingVisualiser_V1 {
     }
 
     // Optimised Indices Based Merge Sort
-    static void mergeSort_IndicesBased(int[] arr, int l, int r){
+    static void mergeSort_IndicesBased(int[] arr, int l, int r,int level){
         if(l >= r) return;
         int mid = l + (r-l)/2;
-        mergeSort_IndicesBased(arr,l,mid);
-        mergeSort_IndicesBased(arr,mid+1,r);
+        mergeSort_IndicesBased(arr,l,mid,level+1);
+        mergeSort_IndicesBased(arr,mid+1,r,level+1);
+
+        System.out.println("Entering Rec_Level " + level);
+        printArray(arr);
+
         merge2(arr,l,mid,r);
+
+        System.out.println("Exiting Rec_Level " + level);
+        printArray(arr);
     }
     static void merge2(int[] arr, int l, int mid, int r){
         int[] temp = new int[r-l+1];
@@ -211,6 +307,9 @@ class SortingVisualiser_V1 {
 
     // Bottom Up Merge Sort
     static void mergeSort_bottomUp(int[] arr){
+        long start = System.nanoTime();
+        int step = 1;
+
         int n = arr.length;
         for(int size = 1; size<n; size *= 2)
         {
@@ -220,17 +319,33 @@ class SortingVisualiser_V1 {
                 int right = Math.min(left+2*size-1, n-1);
                 merge2(arr,left,mid,right);
             }
+
+            System.out.println("Step " + step++);
+            printArray(arr);
+
         }
+
+        long end = System.nanoTime();
+        System.out.println("Time: " + (end - start) / 1_000_000.0 + " ms\n");
     }
 
 
     // Naive Partition Based QuickSort
-    static void quickSort_Naive(int[] arr, int low, int high)
+    static void quickSort_Naive(int[] arr, int low, int high,int level)
     {
         if(low >= high) return;
+
+        System.out.println("Entering Rec_level " + level);
+        printArray(arr);
+
         int p = partition(arr,low,high);
-        quickSort_Naive(arr, low , p-1);
-        quickSort_Naive(arr, p+1, high);
+        System.out.println("Pivot index: " + p);
+
+        System.out.println("Exiting Rec_level " + level);
+        printArray(arr);
+
+        quickSort_Naive(arr, low , p-1,level+1);
+        quickSort_Naive(arr, p+1, high,level+1);
     }
     static int partition(int[] arr, int l, int h)
     {
@@ -257,12 +372,21 @@ class SortingVisualiser_V1 {
     }
 
     // Lomuto Partition Based QuickSort
-    static void quickSort_Lomuto(int[] arr, int low, int high)
+    static void quickSort_Lomuto(int[] arr, int low, int high, int level)
     {
         if(low >= high) return;
+
+        System.out.println("Entering Rec_level " + level);
+        printArray(arr);
+
         int p = lpartition(arr,low,high);
-        quickSort_Lomuto(arr, low , p-1);
-        quickSort_Lomuto(arr, p+1, high);
+        System.out.println("Pivot index: " + p);
+
+        System.out.println("Exiting Rec_level " + level);
+        printArray(arr);
+
+        quickSort_Lomuto(arr, low , p-1,level+1);
+        quickSort_Lomuto(arr, p+1, high,level+1);
     }
     static int lpartition(int[] arr, int l, int h)
     {
@@ -281,12 +405,20 @@ class SortingVisualiser_V1 {
     }
 
     // Lomuto Partition Based QuickSort
-    static void quickSort_Hoare(int[] arr, int low, int high)
+    static void quickSort_Hoare(int[] arr, int low, int high, int level)
     {
         if(low >= high) return;
+        System.out.println("Entering Rec_level " + level);
+        printArray(arr);
+
         int p = hpartition(arr,low,high);
-        quickSort_Hoare(arr, low , p);
-        quickSort_Hoare(arr, p+1, high);
+        System.out.println("Pivot index: " + p);
+
+        System.out.println("Exiting Rec_level " + level);
+        printArray(arr);
+
+        quickSort_Hoare(arr, low , p, level+1);
+        quickSort_Hoare(arr, p+1, high, level+1);
     }
     static int hpartition(int[] arr, int l, int h)
     {
@@ -304,6 +436,8 @@ class SortingVisualiser_V1 {
 
     // Counting Sort
     static void countingSort(int[] arr, int min, int max){
+        long start = System.nanoTime();
+        int step = 1;
         int n = arr.length;
         if(min < 0){
             for(int i=0; i<n; i++) arr[i] = arr[i] - min;
@@ -318,6 +452,8 @@ class SortingVisualiser_V1 {
 
         int[] op = new int[n];
         for(int i=n-1; i>=0; i--){
+            System.out.println("Step " + step++);
+            printArray(op);
             op[count[arr[i]]-1] = arr[i];
             count[arr[i]]--;
         }
@@ -326,12 +462,18 @@ class SortingVisualiser_V1 {
         if(min < 0){
             for(int i=0; i<n; i++) arr[i] = arr[i] + min;
         }
+
+        long end = System.nanoTime();
+        System.out.println("Time: " + (end - start) / 1_000_000.0 + " ms\n");
     }
 
 
     // Radix Sort
     static void radixSort(int[] arr)
     {
+        long start = System.nanoTime();
+        int step = 1;
+
         int n = arr.length;
         int min = arr[0];
         for(int ele : arr){
@@ -344,9 +486,15 @@ class SortingVisualiser_V1 {
             if(ele > max) max = ele;
         }
         for(int exp = 1; max/exp > 0; exp *= 10){
+            System.out.println("Step " + step++);
+            printArray(arr);
             radixCountingSort(arr,exp);
         }
         if(min < 0) for(int i=0; i<n; i++) arr[i] = arr[i] + min;
+
+
+        long end = System.nanoTime();
+        System.out.println("Time: " + (end - start) / 1_000_000.0 + " ms\n");
     }
     static void radixCountingSort(int[] arr, int exp){
         int n = arr.length;
