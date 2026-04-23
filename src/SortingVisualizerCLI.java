@@ -1,32 +1,19 @@
+import java.util.Random;
 import java.util.Scanner;
 
-class SortingVisualizer_V2 {
+class SortingVisualizer_V3 {
+    static Scanner sc = new Scanner(System.in);
 
     static long rec_start;
 
     static void main() {
-        Scanner sc = new Scanner(System.in);
         int[] arr;
-        int n;
-
-        System.out.println("1. Manual Input\n2. Random Input");
-        int ip = sc.nextInt();
-        if(ip == 1) {
-            System.out.print("Please enter number of elements to be sorted :");
-            n = sc.nextInt();
-            arr = new int[n];
-            System.out.println("Please enter array elements (space separated integer values) :");
-            for (int i = 0; i < n; i++) {
-                arr[i] = sc.nextInt();
-            }
-        }
-        else{
-            int[] brr = {1, 9, 71, 2, 66, 50, 7};
-            arr = brr;
-            n = arr.length;
-        }
-
-        int[] save = arr;
+        arr = ipArray(0);
+        unknownAlgoCall(arr);
+    }
+    // Control flow system : whichAlgo(), ipArray(), further(), processAlgo(), spaceTimeComp()
+    static int whichAlgo(){
+        Scanner sc = new Scanner(System.in);
         System.out.println("Which algorithm will you prefer?");
         System.out.println("1. - Bubble Sort");
         System.out.println("2. - Selection Sort");
@@ -35,9 +22,69 @@ class SortingVisualizer_V2 {
         System.out.println("5. - Quick Sort");
         System.out.println("6. - Counting Sort");
         System.out.println("7. - Radix Sort");
-        int algorithm = sc.nextInt();
-
-        int type;
+        return sc.nextInt();
+    }
+    static int[] ipArray(int predefinedBehaviour){
+        int[] arr = null;
+        int n;
+        int ip = 0;
+        if (predefinedBehaviour == 0 ) {
+            System.out.println("Press :");
+            System.out.println("1 - Manual Input\n2 - Random Input");
+            ip = sc.nextInt();
+        }
+        if(predefinedBehaviour == 1 || ip == 1) {
+            System.out.print("Please enter number of elements to be sorted :");
+            n = sc.nextInt();
+            arr = new int[n];
+            System.out.println("Please enter array elements (space separated integer values) :");
+            for (int i = 0; i < n; i++) {
+                arr[i] = sc.nextInt();
+            }
+        }
+        else if(predefinedBehaviour == 2 || ip == 2) {
+            Random r = new Random();
+            arr = new int[10];
+            for(int i=0;i<10;i++) arr[i] = r.nextInt(1000);// Generates random numbers between 0 and 999
+        }
+        else{
+            System.out.println("wrong predefined behaviour");
+        }
+        return arr;
+    }
+    static void further(int[] save, int algorithm)
+    {
+        System.out.println();
+        System.out.println("Press :");
+        System.out.println("1 - Try another algorithm with same manual input");
+        System.out.println("2 - Try another algorithm with different manual input");
+        System.out.println("3 - Try another algorithm with random input");
+        System.out.println("4 - Try same algorithm with different manual input");
+        System.out.println("5 - Try same algorithm with random input");
+        System.out.println("6 - EXIT");
+        int loop = sc.nextInt();
+        if(loop == 1){
+            unknownAlgoCall(save);
+        }
+        else if(loop == 2){
+            unknownAlgoManual_IP_Call();
+        }
+        else if(loop == 3){
+            unknownAlgoRandom_IP_Call();
+        }
+        else if(loop == 4){
+            sameAlgoManual_IP_Call(algorithm);
+        }
+        else if(loop == 5){
+            sameAlgoRandom_IP_Call(algorithm);
+        }
+        else{
+            return;
+        }
+    }
+    static void processAlgo(int[] arr, int algorithm){
+        int type = 0;
+        int n = arr.length;
         switch (algorithm) {
             case 1:
                 bubbleSort(arr);
@@ -108,15 +155,137 @@ class SortingVisualizer_V2 {
             default:
                 System.out.println("Invalid input, please give input in integer format 1 to 7");
         }
+        spaceTimeComp(algorithm,type);
+    }
+    static void spaceTimeComp(int algorithm,int type){
+        switch (algorithm) {
+            case 1:
+                System.out.println("Bubble Sort ::\nTime -> Best: \\u0398(n), Avg: O(n^2), Worst: \\u0398(n^2)" +
+                        "\nSpace (all cases) : \\u0398(1) ");
+                break;
+            case 2:
+                if (type == 1)  System.out.println("Min Selection Sort ::\nTime (all cases) : \\u0398(n^2)" +
+                        "\nSpace (all cases) : \\u0398(1) ");
+                if (type == 2)  System.out.println("Max Selection Sort ::\nTime (all cases) : \\u0398(n^2)" +
+                        "\nSpace (all cases) : \\u0398(1) ");
+                break;
+            case 3:
+                if (type == 1)  System.out.println("Swap Insertion Sort ::\nTime -> Best : \\u0398(n), Avg : O(n^2), Worst : \\u0398(n^2)" +
+                        "\nSpace (all cases) : \\u0398(1) ");
+                if (type == 2)  System.out.println("Shift Insertion Sort ::\nTime -> Best : \\u0398(n), Avg : O(n^2), Worst : \\u0398(n^2)" +
+                        "\nSpace (all cases) : \\u0398(1) ");
+                break;
+            case 4:
+                if (type == 1)
+                    System.out.println("Naive Merge Sort ::\nTime (all cases) : \\u0398(nlogn)" +
+                            "\nSpace (all cases) : O(nlogn) ");
+                if (type == 2)
+                    System.out.println("Indices Merge Sort ::\nTime (all cases) : \\u0398(nlogn)" +
+                            "\nSpace (all cases) : \\u0398(n) ");
+                if (type == 3)
+                    System.out.println("Bottom Up Merge Sort ::\nTime (all cases) : \\u0398(nlogn)" +
+                            "\nSpace (all cases) : O(n) ");
+                break;
+            case 5:
+                if (type == 1)
+                    System.out.println("Naive Quick Sort ::\nTime -> Best & avg. : \\u0398(nlogn), Worst : \\u0398(n^2)" +
+                            "\nSpace (all cases) : \\u0398(n) ");
+                if (type == 2)
+                    System.out.println("Lomuto Quick Sort ::\nTime -> Best : \\u0398(nlogn), Avg : O(nlogn), Worst : \\u0398(n^2)" +
+                            "\nSpace -> Best & avg. : \\u0398(logn), Worst : \\u0398(n)");
+                if (type == 3)
+                    System.out.println("Hoare Quick Sort ::\nTime -> Best : \\u0398(nlogn), Avg : O(nlogn), Worst : \\u0398(n^2)" +
+                            "\nSpace -> Best & avg. : \\u0398(logn), Worst : \\u0398(n)");
+                break;
+            case 6:
+                System.out.println("Counting Sort :: Time (all cases) : \\u0398(n + k)  Space (all cases) : \\u0398(n + k) \n,where k = range of input");
+                break;
+            case 7:
+                System.out.println("Radix Sort :: Time (all cases) : \\u0398(n + d*(n+b) )  " +
+                        "Space (all cases) : \\u0398(n + b) \n,where b = radix(10 for decimal)\nk = range of input\nd = logk to the base b\n");
+                break;
+        }
+    }
+
+    static void unknownAlgoCall(int[] arr){ // WE HAVE INPUT ARRAY
+        int n = arr.length;
+        int[] save = arr.clone();
+        int algorithm = whichAlgo();
+
+        processAlgo(arr,algorithm);
 
         System.out.println("Here is your sorted array :");
         printArray(arr);
+
+        further(save,algorithm);
+    }
+
+    static void unknownAlgoManual_IP_Call(){ // HE DON'T HAVE INPUT ARRAY OR ALGO
+        int[] arr = ipArray(1);
+        int n = arr.length;
+        int[] save = arr.clone();
+        int algorithm = whichAlgo();
+
+        processAlgo(arr,algorithm);
+
+        System.out.println("Here is your sorted array :");
+        printArray(arr);
+
+        further(save,algorithm);
+    }
+
+    static void unknownAlgoRandom_IP_Call(){ // WE DON'T HAVE INPUT ARRAY OR ALGO
+        int[] arr = ipArray(2);
+        int n = arr.length;
+        int[] save = arr.clone();
+        int algorithm = whichAlgo();
+
+        processAlgo(arr,algorithm);
+
+        System.out.println("Here is your sorted array :");
+        printArray(arr);
+
+        further(save,algorithm);
+    }
+
+    static void sameAlgoManual_IP_Call(int algorithm){ // WE HAVE ALGORITHM
+        Scanner sc = new Scanner(System.in);
+        int[] arr = ipArray(1);
+        int n = arr.length;
+        int[] save = arr.clone();
+
+        processAlgo(arr,algorithm);
+
+        System.out.println("Here is your sorted array :");
+        printArray(arr);
+
+        further(save,algorithm);
+    }
+
+    static void sameAlgoRandom_IP_Call(int algorithm){ // WE HAVE ALGORITHM
+        Scanner sc = new Scanner(System.in);
+        int[] arr = ipArray(2);
+        int n = arr.length;
+        int[] save = arr.clone();
+
+        processAlgo(arr,algorithm);
+
+        System.out.println("Here is your sorted array :");
+        printArray(arr);
+
+        further(save,algorithm);
     }
 
     public static void printArray(int[] arr) {
         for (int num : arr) System.out.print(num + " ");
         System.out.println();
     }
+
+
+
+    // SORTING ALGORITHMS BELOW!
+
+
 
     static void bubbleSort(int[] arr){
         long start = System.nanoTime();
