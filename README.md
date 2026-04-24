@@ -5,7 +5,7 @@ A Java-based Command Line Interface (CLI) application that implements and visual
 
 ---
 
-## 🚀 Features
+## 📌 Features
 - Implementation of **7 sorting algorithms**:
     - Bubble Sort
     - Selection Sort (Min & Max variants)
@@ -44,7 +44,13 @@ A Java-based Command Line Interface (CLI) application that implements and visual
 
 ---
 
-## 🧠 Concepts Used
+## 📌 Learnings
+- How to integrate time tracking of algorithms
+- Revision of several algorithms
+- Importance of methods for specific modulation of several tasks
+
+---
+## 📌 Concepts Used
 - Data Structures & Algorithms
 - Recursion (DFS-based execution)
 - Time & Space Complexity Analysis
